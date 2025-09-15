@@ -1,0 +1,72 @@
+### Java ###
+*.class
+*.log
+*.ctxt
+hs_err_pid*
+replay_pid*
+
+# Mobile tools
+*.apk
+*.dex
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# VM crash logs
+hs_err_pid*
+replay_pid*
+
+### Gradle ###
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Gradle caches
+.gradle
+build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# IntelliJ module files (can be regenerated)
+*.iml
+*.ipr
+*.iws
+
+# Sonarlint / other IntelliJ plugins
+.idea/sonarlint/
+.idea/shelf/
+
+### Spring Boot ###
+# Exclude application secrets
+application-*.yml
+application-*.yaml
+application-*.properties
+# Keep a sample/default config if you want
+!application-example.yml
+
+### Logs ###
+logs/
+*.log
+*.log.*
+*.out
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Other tools ###
+# Local env files
+.env
+.env.*
