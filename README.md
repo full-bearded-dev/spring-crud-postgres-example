@@ -26,3 +26,42 @@ Run the application:
 ```shell
 ./gradlew bootRun
 ```
+
+## Testing the Application
+
+You can test this app using the [cURL](https://en.wikipedia.org/wiki/CURL) commands below. You may also prefer to use [Postman](https://www.postman.com/) for
+testing APIs which is more user-friendly.
+
+### Create User
+
+```shell
+curl -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Jon","email": "jon@example.com"}'
+```
+
+### Get All Users
+
+```shell
+curl -X GET http://localhost:8080/api/users
+```
+
+### Get Single User by ID
+
+```shell
+curl -X GET http://localhost:8080/api/users/1
+```
+
+### Update User
+
+```shell
+curl -X PUT http://localhost:8080/api/users/1 \
+-H "Content-Type: application/json" \
+-d '{"name": "JonUpdated", "email": "jon-updated@example.com"}'
+```
+
+### Delete User
+
+```shell
+curl -X DELETE http://localhost:8080/api/users/1
+```
