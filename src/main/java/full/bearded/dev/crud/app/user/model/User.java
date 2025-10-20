@@ -1,4 +1,4 @@
-package full.bearded.dev.crud.app.user;
+package full.bearded.dev.crud.app.user.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

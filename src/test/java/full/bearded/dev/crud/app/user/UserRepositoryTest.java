@@ -2,6 +2,7 @@ package full.bearded.dev.crud.app.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import full.bearded.dev.crud.app.user.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
