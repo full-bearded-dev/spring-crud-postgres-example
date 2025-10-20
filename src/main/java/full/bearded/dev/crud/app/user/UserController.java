@@ -2,6 +2,9 @@ package full.bearded.dev.crud.app.user;
 
 import java.util.List;
 
+import full.bearded.dev.crud.app.user.model.UserCreateRequest;
+import full.bearded.dev.crud.app.user.model.UserResponse;
+import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,34 +19,42 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(final UserService userService) {
+    public UserController(final UserService userService, final UserMapper userMapper) {
 
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
 
-        return userService.getAllUsers();
+        return userService.getAllUsers().stream()
+                          .map(userMapper::toResponse)
+                          .toList();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") final Long id) {
+    public UserResponse getUserById(@PathVariable("id") final Long id) {
 
-        return userService.getUserById(id);
+        final var userById = userService.getUserById(id);
+        return userMapper.toResponse(userById);
     }
 
     @PostMapping
-    public User createUser(@RequestBody final User user) {
+    public UserResponse createUser(@RequestBody final UserCreateRequest user) {
 
-        return userService.createUser(user);
+        final var newUser = userService.createUser(user);
+        return userMapper.toResponse(newUser);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable("id") final Long id, @RequestBody final User updatedUser) {
+    public UserResponse updateUser(@PathVariable("id") final Long id,
+                                   @RequestBody final UserUpdateRequest updatedUser) {
 
-        return userService.updateUser(id, updatedUser);
+        final var updateUser = userService.updateUser(id, updatedUser);
+        return userMapper.toResponse(updateUser);
     }
 
     @DeleteMapping("/{id}")
