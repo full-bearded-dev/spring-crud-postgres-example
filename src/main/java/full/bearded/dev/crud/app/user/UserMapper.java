@@ -13,11 +13,12 @@ public class UserMapper {
         final var user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
+        user.setAge(request.getAge());
         return user;
     }
 
     public UserResponse toResponse(final User user) {
 
-        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(), user.getAge());
     }
 }

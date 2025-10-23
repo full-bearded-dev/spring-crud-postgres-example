@@ -37,7 +37,7 @@ testing APIs which is more user-friendly.
 ```shell
 curl -X POST http://localhost:8080/api/users \
   -H "Content-Type: application/json" \
-  -d '{"name": "Jon","email": "jon@example.com"}'
+  -d '{"name": "Jon","email": "jon@example.com", "age": 40}'
 ```
 
 ### Get All Users
@@ -57,7 +57,7 @@ curl -X GET http://localhost:8080/api/users/1
 ```shell
 curl -X PUT http://localhost:8080/api/users/1 \
 -H "Content-Type: application/json" \
--d '{"name": "JonUpdated", "email": "jon-updated@example.com"}'
+-d '{"name": "JonUpdated", "email": "jon-updated@example.com", "age": 41}'
 ```
 
 ### Delete User

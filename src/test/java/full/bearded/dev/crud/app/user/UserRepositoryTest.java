@@ -16,7 +16,7 @@ class UserRepositoryTest {
     @Test
     void userRepositoryTest() {
 
-        final var user = new User(null, "fbd", "fbd@example.com");
+        final var user = new User(null, "fbd", "fbd@example.com", 40);
         final var savedUser = userRepository.save(user);
 
         final var foundUserList = userRepository.findAll();
