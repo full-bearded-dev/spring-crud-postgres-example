@@ -2,6 +2,7 @@ package full.bearded.dev.crud.app.user;
 
 import java.util.List;
 
+import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
@@ -27,7 +28,7 @@ public class UserService {
     public User getUserById(final Long id) {
 
         return userRepository.findById(id)
-                             .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
+                             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
     }
 
     public User createUser(final UserCreateRequest user) {
@@ -41,6 +42,7 @@ public class UserService {
         final var user = getUserById(id);
         user.setName(updatedUser.getName());
         user.setEmail(updatedUser.getEmail());
+        user.setAge(updatedUser.getAge());
         return userRepository.save(user);
     }
 

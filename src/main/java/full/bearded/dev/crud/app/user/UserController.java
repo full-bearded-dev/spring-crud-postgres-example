@@ -5,6 +5,7 @@ import java.util.List;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserResponse;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponse createUser(@RequestBody final UserCreateRequest user) {
+    public UserResponse createUser(@Valid @RequestBody final UserCreateRequest user) {
 
         final var newUser = userService.createUser(user);
         return userMapper.toResponse(newUser);
@@ -51,7 +52,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public UserResponse updateUser(@PathVariable("id") final Long id,
-                                   @RequestBody final UserUpdateRequest updatedUser) {
+                                   @Valid @RequestBody final UserUpdateRequest updatedUser) {
 
         final var updateUser = userService.updateUser(id, updatedUser);
         return userMapper.toResponse(updateUser);
