@@ -10,6 +10,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 @DataJpaTest
 class UserRepositoryTest {
 
+    //TODO: remove maybe?
+
     @Autowired
     private UserRepository userRepository;
 
