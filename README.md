@@ -32,7 +32,26 @@ Run the application:
 You can test this app using the [cURL](https://en.wikipedia.org/wiki/CURL) commands below. You may also prefer to use [Postman](https://www.postman.com/) for
 testing APIs which is more user-friendly.
 
-### Create User
+### Run Unit and Integration Tests
+
+Run all tests:
+```shell
+./gradlew test
+```
+
+Run a specific test class (change the package and class name):
+```shell
+./gradlew test --tests com.example.YourTestClass
+```
+
+Run a specific test method (change the package, class and method name):
+```shell
+./gradlew test --tests com.example.YourTestClass.yourTestMethod
+```
+
+### cURL Commands
+
+#### Create User
 
 ```shell
 curl -X POST http://localhost:8080/api/users \
@@ -40,19 +59,19 @@ curl -X POST http://localhost:8080/api/users \
   -d '{"name": "Jon","email": "jon@example.com", "age": 40}'
 ```
 
-### Get All Users
+#### Get All Users
 
 ```shell
 curl -X GET http://localhost:8080/api/users
 ```
 
-### Get Single User by ID
+#### Get Single User by ID
 
 ```shell
 curl -X GET http://localhost:8080/api/users/1
 ```
 
-### Update User
+#### Update User
 
 ```shell
 curl -X PUT http://localhost:8080/api/users/1 \
@@ -60,7 +79,7 @@ curl -X PUT http://localhost:8080/api/users/1 \
 -d '{"name": "JonUpdated", "email": "jon-updated@example.com", "age": 41}'
 ```
 
-### Delete User
+#### Delete User
 
 ```shell
 curl -X DELETE http://localhost:8080/api/users/1
