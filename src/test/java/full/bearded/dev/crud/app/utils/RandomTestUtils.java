@@ -23,6 +23,6 @@ public class RandomTestUtils {
 
     public static long randomId() {
 
-        return ThreadLocalRandom.current().nextLong(1, 10_000);
+        return ThreadLocalRandom.current().nextLong(1, 100);
     }
 }

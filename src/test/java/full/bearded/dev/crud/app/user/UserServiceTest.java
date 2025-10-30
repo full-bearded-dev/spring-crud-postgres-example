@@ -23,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
+    private static final long NON_EXISTENT_ID = 999L;
     private static final User USER_1 = randomUser();
     private static final User USER_2 = randomUser();
 
@@ -48,27 +49,26 @@ class UserServiceTest {
     @Test
     void getUserByIdReturnsUserWhenExists() {
 
-        doReturn(Optional.of(USER_1)).when(userRepository).findById(1L);
+        final var user1Id = USER_1.getId();
+        doReturn(Optional.of(USER_1)).when(userRepository).findById(user1Id);
 
-        assertThat(underTest.getUserById(1L)).isEqualTo(USER_1);
+        assertThat(underTest.getUserById(user1Id)).isEqualTo(USER_1);
     }
 
     @Test
     void getUserByIdThrowsExceptionWhenUserDoesNotExist() {
 
-        final var userId = 999L;
-        doReturn(Optional.empty()).when(userRepository).findById(userId);
+        doReturn(Optional.empty()).when(userRepository).findById(NON_EXISTENT_ID);
 
-        assertThatThrownBy(() -> underTest.getUserById(userId))
+        assertThatThrownBy(() -> underTest.getUserById(NON_EXISTENT_ID))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("User not found with ID: 999");
+                .hasMessageContaining("User not found with ID: " + NON_EXISTENT_ID);
     }
 
     @Test
     void createUserMapsAndSavesNewUser() {
 
         final var request = randomUserCreateRequest();
-
         final var mappedUser = from(request);
 
         doReturn(mappedUser).when(userMapper).toEntity(request);
@@ -82,13 +82,14 @@ class UserServiceTest {
     @Test
     void updateUserUpdatesExistingUserFieldsAndSaves() {
 
-        final var existingUser = randomUser();
+        final var userId = 1L;
+        final var existingUser = randomUser(userId);
         final var updatedRequest = randomUserUpdateRequest();
 
-        doReturn(Optional.of(existingUser)).when(userRepository).findById(1L);
+        doReturn(Optional.of(existingUser)).when(userRepository).findById(userId);
         doReturn(existingUser).when(userRepository).save(existingUser);
 
-        final var result = underTest.updateUser(1L, updatedRequest);
+        final var result = underTest.updateUser(userId, updatedRequest);
 
         assertThat(result.getName()).isEqualTo(updatedRequest.getName());
         assertThat(result.getEmail()).isEqualTo(updatedRequest.getEmail());
@@ -101,18 +102,19 @@ class UserServiceTest {
 
         final var request = randomUserUpdateRequest();
 
-        doReturn(Optional.empty()).when(userRepository).findById(123L);
+        doReturn(Optional.empty()).when(userRepository).findById(NON_EXISTENT_ID);
 
-        assertThatThrownBy(() -> underTest.updateUser(123L, request))
+        assertThatThrownBy(() -> underTest.updateUser(NON_EXISTENT_ID, request))
                 .isInstanceOf(UserNotFoundException.class)
-                .hasMessageContaining("User not found with ID: 123");
+                .hasMessageContaining("User not found with ID: " + NON_EXISTENT_ID);
     }
 
     @Test
     void deleteUserDeletesUserById() {
 
-        underTest.deleteUser(10L);
+        final var userIdToDelete = 1L;
+        underTest.deleteUser(userIdToDelete);
 
-        verify(userRepository).deleteById(10L);
+        verify(userRepository).deleteById(userIdToDelete);
     }
 }

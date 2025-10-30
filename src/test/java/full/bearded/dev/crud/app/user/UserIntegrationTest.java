@@ -1,17 +1,18 @@
 package full.bearded.dev.crud.app.user;
 
+import static full.bearded.dev.crud.app.utils.RestUtils.createUser;
+import static full.bearded.dev.crud.app.utils.RestUtils.deleteUser;
+import static full.bearded.dev.crud.app.utils.RestUtils.getAllUsers;
+import static full.bearded.dev.crud.app.utils.RestUtils.getUserById;
+import static full.bearded.dev.crud.app.utils.RestUtils.updateUser;
+import static full.bearded.dev.crud.app.utils.UserTestUtils.randomUserCreateRequest;
+import static full.bearded.dev.crud.app.utils.UserTestUtils.randomUserUpdateRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
-import full.bearded.dev.crud.app.user.model.UserCreateRequest;
-import full.bearded.dev.crud.app.user.model.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -22,8 +23,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class UserIntegrationTest {
-
-    //TODO: add more tests
 
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
@@ -44,24 +43,52 @@ class UserIntegrationTest {
     @Test
     void shouldCreateAndFetchUser() {
 
-        final var userCreateRequest = new UserCreateRequest("user", "user@email.com", 20);
+        final var userCreateRequest = randomUserCreateRequest();
+        createUser(restTemplate, userCreateRequest);
 
-        restTemplate.postForEntity("/api/users", userCreateRequest, UserResponse.class);
+        final var listOfUsersResponse = getAllUsers(restTemplate);
+        final var body = listOfUsersResponse.getBody();
 
-        final var userResponseEntity = restTemplate.exchange("/api/users",
-                                                             HttpMethod.GET,
-                                                             null,
-                                                             new ParameterizedTypeReference<List<UserResponse>>() {});
-
-        final List<UserResponse> body = userResponseEntity.getBody();
-
-        assertThat(userResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
+        assertThat(listOfUsersResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(body).isNotNull();
         assertThat(body.size()).isEqualTo(1);
+        assertThat(body.getFirst().getName()).isEqualTo(userCreateRequest.getName());
+        assertThat(body.getFirst().getEmail()).isEqualTo(userCreateRequest.getEmail());
+        assertThat(body.getFirst().getAge()).isEqualTo(userCreateRequest.getAge());
+    }
 
-        assertThat(body.getFirst().getName()).isEqualTo("user");
-        assertThat(body.getFirst().getEmail()).isEqualTo("user@email.com");
-        assertThat(body.getFirst().getAge()).isEqualTo(20);
+    @Test
+    void shouldUpdateUserSuccessfully() {
+
+        final var userCreateRequest = randomUserCreateRequest();
+        final var createdUserResponse = createUser(restTemplate, userCreateRequest);
+        final var createdUser = createdUserResponse.getBody();
+
+        assertThat(createdUser).isNotNull();
+
+        final var userUpdateRequest = randomUserUpdateRequest();
+        final var updatedUserResponse = updateUser(restTemplate, createdUser.getId(), userUpdateRequest);
+        final var body = updatedUserResponse.getBody();
+
+        assertThat(updatedUserResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(body).isNotNull();
+        assertThat(body.getName()).isEqualTo(userUpdateRequest.getName());
+        assertThat(body.getEmail()).isEqualTo(userUpdateRequest.getEmail());
+        assertThat(body.getAge()).isEqualTo(userUpdateRequest.getAge());
+    }
+
+    @Test
+    void shouldDeleteUserAndReturnNotFoundOnSubsequentGet() {
+
+        final var userCreateRequest = randomUserCreateRequest();
+        final var createdUserResponse = createUser(restTemplate, userCreateRequest);
+        final var createdUser = createdUserResponse.getBody();
+
+        assertThat(createdUser).isNotNull();
+
+        deleteUser(restTemplate, createdUser.getId());
+
+        final var userResponse = getUserById(restTemplate, createdUser.getId());
+        assertThat(userResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }
