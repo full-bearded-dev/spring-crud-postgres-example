@@ -5,6 +5,10 @@ import java.util.List;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserResponse;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "CRUD operations for managing users")
 public class UserController {
 
     private final UserService userService;
@@ -28,6 +33,8 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
+    @Operation(summary = "Get all users", description = "Returns a list of all users stored in the database")
+    @ApiResponse(responseCode = "200", description = "List of users returned successfully")
     @GetMapping
     public List<UserResponse> getAllUsers() {
 
@@ -36,6 +43,11 @@ public class UserController {
                           .toList();
     }
 
+    @Operation(summary = "Get a user by their ID", description = "Returns a user with the specified ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User found and returned"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @GetMapping("/{id}")
     public UserResponse getUserById(@PathVariable("id") final Long id) {
 
@@ -43,6 +55,11 @@ public class UserController {
         return userMapper.toResponse(userById);
     }
 
+    @Operation(summary = "Create a new user", description = "Creates and returns the newly created user")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PostMapping
     public UserResponse createUser(@Valid @RequestBody final UserCreateRequest user) {
 
@@ -50,6 +67,12 @@ public class UserController {
         return userMapper.toResponse(newUser);
     }
 
+    @Operation(summary = "Update a user", description = "Updates a user by ID with the provided data")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data")
+    })
     @PutMapping("/{id}")
     public UserResponse updateUser(@PathVariable("id") final Long id,
                                    @Valid @RequestBody final UserUpdateRequest updatedUser) {
@@ -58,6 +81,11 @@ public class UserController {
         return userMapper.toResponse(updateUser);
     }
 
+    @Operation(summary = "Delete a user", description = "Deletes a user by ID")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable("id") final Long id) {
 
