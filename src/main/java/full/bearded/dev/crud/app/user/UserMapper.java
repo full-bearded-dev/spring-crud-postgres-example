@@ -10,11 +10,11 @@ public class UserMapper {
 
     public User toEntity(final UserCreateRequest request) {
 
-        final var user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setAge(request.getAge());
-        return user;
+        return User.builder()
+                   .name(request.name())
+                   .email(request.email())
+                   .age(request.age())
+                   .build();
     }
 
     public UserResponse toResponse(final User user) {

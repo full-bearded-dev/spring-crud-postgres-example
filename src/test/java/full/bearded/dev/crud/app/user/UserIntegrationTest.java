@@ -52,9 +52,9 @@ class UserIntegrationTest {
         assertThat(listOfUsersResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(body).isNotNull();
         assertThat(body.size()).isEqualTo(1);
-        assertThat(body.getFirst().getName()).isEqualTo(userCreateRequest.getName());
-        assertThat(body.getFirst().getEmail()).isEqualTo(userCreateRequest.getEmail());
-        assertThat(body.getFirst().getAge()).isEqualTo(userCreateRequest.getAge());
+        assertThat(body.getFirst().name()).isEqualTo(userCreateRequest.name());
+        assertThat(body.getFirst().email()).isEqualTo(userCreateRequest.email());
+        assertThat(body.getFirst().age()).isEqualTo(userCreateRequest.age());
     }
 
     @Test
@@ -67,14 +67,14 @@ class UserIntegrationTest {
         assertThat(createdUser).isNotNull();
 
         final var userUpdateRequest = randomUserUpdateRequest();
-        final var updatedUserResponse = updateUser(restTemplate, createdUser.getId(), userUpdateRequest);
+        final var updatedUserResponse = updateUser(restTemplate, createdUser.id(), userUpdateRequest);
         final var body = updatedUserResponse.getBody();
 
         assertThat(updatedUserResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(body).isNotNull();
-        assertThat(body.getName()).isEqualTo(userUpdateRequest.getName());
-        assertThat(body.getEmail()).isEqualTo(userUpdateRequest.getEmail());
-        assertThat(body.getAge()).isEqualTo(userUpdateRequest.getAge());
+        assertThat(body.name()).isEqualTo(userUpdateRequest.name());
+        assertThat(body.email()).isEqualTo(userUpdateRequest.email());
+        assertThat(body.age()).isEqualTo(userUpdateRequest.age());
     }
 
     @Test
@@ -86,9 +86,9 @@ class UserIntegrationTest {
 
         assertThat(createdUser).isNotNull();
 
-        deleteUser(restTemplate, createdUser.getId());
+        deleteUser(restTemplate, createdUser.id());
 
-        final var userResponse = getUserById(restTemplate, createdUser.getId());
+        final var userResponse = getUserById(restTemplate, createdUser.id());
         assertThat(userResponse.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 }

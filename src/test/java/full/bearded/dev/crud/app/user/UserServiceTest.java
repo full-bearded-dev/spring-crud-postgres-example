@@ -91,9 +91,9 @@ class UserServiceTest {
 
         final var result = underTest.updateUser(userId, updatedRequest);
 
-        assertThat(result.getName()).isEqualTo(updatedRequest.getName());
-        assertThat(result.getEmail()).isEqualTo(updatedRequest.getEmail());
-        assertThat(result.getAge()).isEqualTo(updatedRequest.getAge());
+        assertThat(result.getName()).isEqualTo(updatedRequest.name());
+        assertThat(result.getEmail()).isEqualTo(updatedRequest.email());
+        assertThat(result.getAge()).isEqualTo(updatedRequest.age());
         verify(userRepository).save(existingUser);
     }
 

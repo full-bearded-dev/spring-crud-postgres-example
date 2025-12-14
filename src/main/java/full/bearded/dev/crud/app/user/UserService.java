@@ -40,9 +40,9 @@ public class UserService {
     public User updateUser(final Long id, final UserUpdateRequest updatedUser) {
 
         final var user = getUserById(id);
-        user.setName(updatedUser.getName());
-        user.setEmail(updatedUser.getEmail());
-        user.setAge(updatedUser.getAge());
+        user.setName(updatedUser.name());
+        user.setEmail(updatedUser.email());
+        user.setAge(updatedUser.age());
         return userRepository.save(user);
     }
 

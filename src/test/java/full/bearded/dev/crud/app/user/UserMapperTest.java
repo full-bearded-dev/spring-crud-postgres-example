@@ -24,9 +24,9 @@ class UserMapperTest {
 
         final var result = underTest.toEntity(request);
 
-        assertThat(result.getName()).isEqualTo(request.getName());
-        assertThat(result.getEmail()).isEqualTo(request.getEmail());
-        assertThat(result.getAge()).isEqualTo(request.getAge());
+        assertThat(result.getName()).isEqualTo(request.name());
+        assertThat(result.getEmail()).isEqualTo(request.email());
+        assertThat(result.getAge()).isEqualTo(request.age());
     }
 
     @Test
@@ -35,9 +35,9 @@ class UserMapperTest {
         final var user = randomUser();
         final var result = underTest.toResponse(user);
 
-        assertThat(result.getId()).isEqualTo(user.getId());
-        assertThat(result.getName()).isEqualTo(user.getName());
-        assertThat(result.getEmail()).isEqualTo(user.getEmail());
-        assertThat(result.getAge()).isEqualTo(user.getAge());
+        assertThat(result.id()).isEqualTo(user.getId());
+        assertThat(result.name()).isEqualTo(user.getName());
+        assertThat(result.email()).isEqualTo(user.getEmail());
+        assertThat(result.age()).isEqualTo(user.getAge());
     }
 }
