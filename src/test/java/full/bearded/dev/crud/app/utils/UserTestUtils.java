@@ -25,17 +25,17 @@ public class UserTestUtils {
     public static User from(final UserCreateRequest userCreateRequest) {
 
         return new User(randomId(),
-                        userCreateRequest.getName(),
-                        userCreateRequest.getEmail(),
-                        userCreateRequest.getAge());
+                        userCreateRequest.name(),
+                        userCreateRequest.email(),
+                        userCreateRequest.age());
     }
 
     public static User from(final long id, final UserUpdateRequest userUpdateRequest) {
 
         return new User(id,
-                        userUpdateRequest.getName(),
-                        userUpdateRequest.getEmail(),
-                        userUpdateRequest.getAge());
+                        userUpdateRequest.name(),
+                        userUpdateRequest.email(),
+                        userUpdateRequest.age());
     }
 
     public static UserResponse from(final User user) {

@@ -3,12 +3,14 @@ package full.bearded.dev.crud.app.exception;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,6 +28,7 @@ public class GlobalExceptionHandler {
         response.put("status", HttpStatus.BAD_REQUEST.value());
         response.put("errors", errors);
 
+        log.warn("Bad request made - ", ex);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
@@ -36,6 +39,7 @@ public class GlobalExceptionHandler {
         response.put("status", HttpStatus.NOT_FOUND.value());
         response.put("error", ex.getMessage());
 
+        log.warn("User not found - ", ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 }
