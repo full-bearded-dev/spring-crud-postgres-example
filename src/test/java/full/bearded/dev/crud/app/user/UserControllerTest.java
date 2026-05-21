@@ -3,6 +3,8 @@ package full.bearded.dev.crud.app.user;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomAge;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomEmail;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomString;
+import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_USERNAME;
+import static full.bearded.dev.crud.app.utils.TestConstants.USERS_API_PATH;
 import static full.bearded.dev.crud.app.utils.TestUtils.asJsonString;
 import static full.bearded.dev.crud.app.utils.UserTestUtils.from;
 import static full.bearded.dev.crud.app.utils.UserTestUtils.randomUser;
@@ -23,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.stream.Stream;
 
+import full.bearded.dev.crud.app.config.SecurityConfig;
 import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
@@ -33,15 +36,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
+@Import({SecurityConfig.class})
 class UserControllerTest {
 
-    private static final String USERS_API_PATH = "/api/users";
     private static final User USER_1 = randomUser(1L);
     private static final User USER_2 = randomUser(2L);
 
@@ -51,6 +56,7 @@ class UserControllerTest {
     @MockitoBean private UserMapper userMapper;
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getAllUsersReturnsListOfUserResponses() throws Exception {
 
         final var userResponse1 = from(USER_1);
@@ -68,6 +74,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getUserByIdReturnsUserResponseWhenUserExists() throws Exception {
 
         final var userResponse = from(USER_1);
@@ -84,6 +91,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void createUserCreatesUserAndReturnsCreatedUserResponse() throws Exception {
 
         final var userCreateRequest = randomUserCreateRequest();
@@ -104,6 +112,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void updateUserUpdatesUserAndReturnsUpdatedUserResponse() throws Exception {
 
         final var userId = 1L;
@@ -125,6 +134,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void deleteUserCallsUserServiceAndReturns204() throws Exception {
 
         final var userId = 1L;
@@ -135,6 +145,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getUserByIdThrowsUserNotFoundReturns404WithErrorMessage() throws Exception {
         final var userId = 999L;
         doThrow(new UserNotFoundException("User not found with ID: " + userId))
@@ -148,6 +159,7 @@ class UserControllerTest {
 
     @MethodSource("invalidUserCreateRequests")
     @ParameterizedTest
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void createUserWithInvalidFieldsReturnsBadRequestAndErrorMessage(final UserCreateRequest userCreateRequest,
                                                                      final String expression,
                                                                      final String expectedErrorMessage) throws
@@ -163,6 +175,7 @@ class UserControllerTest {
 
     @MethodSource("invalidUserUpdateRequests")
     @ParameterizedTest
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void updateUserWithInvalidFieldsReturnsBadRequestAndErrorMessage(final UserUpdateRequest userUpdateRequest,
                                                                      final String expression,
                                                                      final String expectedErrorMessage) throws

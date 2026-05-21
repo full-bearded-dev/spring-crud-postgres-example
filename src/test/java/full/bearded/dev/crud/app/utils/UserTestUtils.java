@@ -9,8 +9,10 @@ import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserResponse;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
+import lombok.experimental.UtilityClass;
 
-public class UserTestUtils {
+@UtilityClass
+public final class UserTestUtils {
 
     public static User randomUser(final long id) {
 
