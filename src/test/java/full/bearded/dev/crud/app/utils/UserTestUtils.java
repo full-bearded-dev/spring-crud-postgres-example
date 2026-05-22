@@ -8,6 +8,7 @@ import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomString;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserResponse;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import lombok.experimental.UtilityClass;
 
@@ -16,12 +17,17 @@ public final class UserTestUtils {
 
     public static User randomUser(final long id) {
 
-        return new User(id, randomString(10), randomEmail(), randomAge());
+        return new User(id, randomString(10), randomEmail(), randomAge(), randomString(10), UserRole.USER);
+    }
+
+    public static User randomUserWithNullId() {
+
+        return new User(null, randomString(10), randomEmail(), randomAge(), randomString(10), UserRole.USER);
     }
 
     public static User randomUser() {
 
-        return new User(randomId(), randomString(10), randomEmail(), randomAge());
+        return randomUser(randomId());
     }
 
     public static User from(final UserCreateRequest userCreateRequest) {
@@ -29,7 +35,9 @@ public final class UserTestUtils {
         return new User(randomId(),
                         userCreateRequest.name(),
                         userCreateRequest.email(),
-                        userCreateRequest.age());
+                        userCreateRequest.age(),
+                        randomString(10),
+                        UserRole.USER);
     }
 
     public static User from(final long id, final UserUpdateRequest userUpdateRequest) {
@@ -37,7 +45,9 @@ public final class UserTestUtils {
         return new User(id,
                         userUpdateRequest.name(),
                         userUpdateRequest.email(),
-                        userUpdateRequest.age());
+                        userUpdateRequest.age(),
+                        randomString(10),
+                        UserRole.USER);
     }
 
     public static UserResponse from(final User user) {

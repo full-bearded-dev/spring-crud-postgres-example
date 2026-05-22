@@ -2,8 +2,6 @@ package full.bearded.dev.crud.app.utils;
 
 import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_PASSWORD;
 import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_USERNAME;
-import static full.bearded.dev.crud.app.utils.TestConstants.USER_PASSWORD;
-import static full.bearded.dev.crud.app.utils.TestConstants.USER_USERNAME;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public final class RestUtils {
 
     public static ResponseEntity<List<UserResponse>> getAllUsers(final TestRestTemplate restTemplate) {
 
-        return restTemplate.withBasicAuth(USER_USERNAME, USER_PASSWORD)
+        return restTemplate.withBasicAuth(ADMIN_USERNAME, ADMIN_PASSWORD)
                            .exchange(USERS_API_PATH,
                                      HttpMethod.GET,
                                      null,
@@ -34,7 +32,7 @@ public final class RestUtils {
     public static ResponseEntity<UserResponse> getUserById(final TestRestTemplate restTemplate,
                                                      final long userId) {
 
-        return restTemplate.withBasicAuth(USER_USERNAME, USER_PASSWORD)
+        return restTemplate.withBasicAuth(ADMIN_USERNAME, ADMIN_PASSWORD)
                            .getForEntity(USERS_API_PATH + "/" + userId, UserResponse.class);
     }
 
