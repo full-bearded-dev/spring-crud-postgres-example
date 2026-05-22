@@ -29,6 +29,7 @@ import full.bearded.dev.crud.app.config.SecurityConfig;
 import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -98,7 +99,7 @@ class UserControllerTest {
         final var user = from(userCreateRequest);
         final var userResponse = from(user);
 
-        doReturn(user).when(userService).createUser(refEq(userCreateRequest));
+        doReturn(user).when(userService).createUser(refEq(userCreateRequest), refEq(UserRole.USER));
         doReturn(userResponse).when(userMapper).toResponse(user);
 
         mockMvc.perform(post(USERS_API_PATH)
@@ -195,39 +196,59 @@ class UserControllerTest {
         final var validName = randomString(10);
         final var validEmail = randomEmail();
         final var validAge = randomAge();
+        final var validPassword = "1aB%2cD$";
 
         final var nameExpression = "$.errors.name";
         final var emailExpression = "$.errors.email";
         final var ageExpression = "$.errors.age";
+        final var passwordExpression = "$.errors.password";
 
         return Stream.of(
-                Arguments.of(new UserCreateRequest(null, validEmail, validAge),
+                Arguments.of(new UserCreateRequest(null, validEmail, validAge, validPassword),
                              nameExpression,
                              "Name is required"),
-                Arguments.of(new UserCreateRequest(randomString(200), validEmail, validAge),
+                Arguments.of(new UserCreateRequest(randomString(200), validEmail, validAge, validPassword),
                              nameExpression,
                              "Name must be between 2 and 100 characters"),
-                Arguments.of(new UserCreateRequest(validName, null, validAge),
+                Arguments.of(new UserCreateRequest(validName, null, validAge, validPassword),
                              emailExpression,
                              "Email is required"),
-                Arguments.of(new UserCreateRequest(validName, "invalid", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, "invalid@", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid@", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, "invalid@.com", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid@.com", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, -1),
+                Arguments.of(new UserCreateRequest(validName, validEmail, -1, validPassword),
                              ageExpression,
                              "Age should not be less than 18"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, 200),
+                Arguments.of(new UserCreateRequest(validName, validEmail, 200, validPassword),
                              ageExpression,
                              "Age should not be greater than 150"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, 10),
+                Arguments.of(new UserCreateRequest(validName, validEmail, 10, validPassword),
                              ageExpression,
-                             "Age should not be less than 18")
+                             "Age should not be less than 18"),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, null),
+                             passwordExpression,
+                             "Password is required"),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "aaBBccDD$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1ABBCCDD$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1abbccdd$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1Abbccddd"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1Ab$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long.")
         );
     }
 

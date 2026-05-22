@@ -15,6 +15,8 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class UserTestUtils {
 
+    private static final String VALID_PASSWORD = "1aB%2cD$";
+
     public static User randomUser(final long id) {
 
         return new User(id, randomString(10), randomEmail(), randomAge(), randomString(10), UserRole.USER);
@@ -60,7 +62,7 @@ public final class UserTestUtils {
 
     public static UserCreateRequest randomUserCreateRequest() {
 
-        return new UserCreateRequest(randomString(10), randomEmail(), randomAge());
+        return new UserCreateRequest(randomString(10), randomEmail(), randomAge(), VALID_PASSWORD);
     }
 
     public static UserUpdateRequest randomUserUpdateRequest() {

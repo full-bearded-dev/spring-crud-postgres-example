@@ -1,6 +1,5 @@
 package full.bearded.dev.crud.app.user;
 
-import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_EMAIL;
 import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_PASSWORD;
 import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_USERNAME;
 import static full.bearded.dev.crud.app.utils.TestConstants.USERS_API_PATH;
@@ -12,47 +11,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import full.bearded.dev.crud.app.integration.IntegrationTest;
 import full.bearded.dev.crud.app.user.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@Testcontainers
-class UserSecurityTest {
+class UserSecurityTest extends IntegrationTest {
 
     private static final User USER = randomUserWithNullId();
 
     @Autowired private MockMvc mockMvc;
     @Autowired private UserTestDataManager userTestDataManager;
-
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("test-db")
-            .withUsername("test")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void configure(final DynamicPropertyRegistry registry) {
-
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-        registry.add("app.security.admin.password", () -> ADMIN_PASSWORD);
-        registry.add("app.security.admin.email", () -> ADMIN_EMAIL);
-    }
 
     @BeforeEach
     void setUp() {
