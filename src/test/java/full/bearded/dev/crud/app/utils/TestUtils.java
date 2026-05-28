@@ -1,8 +1,10 @@
 package full.bearded.dev.crud.app.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.experimental.UtilityClass;
 
-public class TestUtils {
+@UtilityClass
+public final class TestUtils {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

@@ -2,9 +2,11 @@ package full.bearded.dev.crud.app.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import lombok.experimental.UtilityClass;
 import org.testcontainers.shaded.org.apache.commons.lang3.RandomStringUtils;
 
-public class RandomTestUtils {
+@UtilityClass
+public final class RandomTestUtils {
 
     public static String randomString(int length) {
 

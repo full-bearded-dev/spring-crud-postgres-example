@@ -5,6 +5,7 @@ import java.util.List;
 import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,9 @@ public class UserService {
                              .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + id));
     }
 
-    public User createUser(final UserCreateRequest user) {
+    public User createUser(final UserCreateRequest user, final UserRole userRole) {
 
-        final var newUser = userMapper.toEntity(user);
+        final var newUser = userMapper.toEntity(user, userRole);
         return userRepository.save(newUser);
     }
 

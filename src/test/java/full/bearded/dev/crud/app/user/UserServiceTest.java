@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,11 +72,11 @@ class UserServiceTest {
         final var request = randomUserCreateRequest();
         final var mappedUser = from(request);
 
-        doReturn(mappedUser).when(userMapper).toEntity(request);
+        doReturn(mappedUser).when(userMapper).toEntity(request, UserRole.USER);
         doReturn(mappedUser).when(userRepository).save(mappedUser);
 
-        assertThat(underTest.createUser(request)).isEqualTo(mappedUser);
-        verify(userMapper).toEntity(request);
+        assertThat(underTest.createUser(request, UserRole.USER)).isEqualTo(mappedUser);
+        verify(userMapper).toEntity(request, UserRole.USER);
         verify(userRepository).save(mappedUser);
     }
 

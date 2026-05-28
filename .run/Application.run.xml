@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Application" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <envs>
+      <env name="ADMIN_EMAIL" value="admin@example.com" />
+      <env name="ADMIN_PASSWORD" value="supersecure" />
+    </envs>
+    <module name="crud.app.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="full.bearded.dev.crud.app.Application" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

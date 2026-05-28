@@ -3,6 +3,8 @@ package full.bearded.dev.crud.app.user;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomAge;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomEmail;
 import static full.bearded.dev.crud.app.utils.RandomTestUtils.randomString;
+import static full.bearded.dev.crud.app.utils.TestConstants.ADMIN_USERNAME;
+import static full.bearded.dev.crud.app.utils.TestConstants.USERS_API_PATH;
 import static full.bearded.dev.crud.app.utils.TestUtils.asJsonString;
 import static full.bearded.dev.crud.app.utils.UserTestUtils.from;
 import static full.bearded.dev.crud.app.utils.UserTestUtils.randomUser;
@@ -23,9 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.stream.Stream;
 
+import full.bearded.dev.crud.app.config.SecurityConfig;
 import full.bearded.dev.crud.app.exception.UserNotFoundException;
 import full.bearded.dev.crud.app.user.model.User;
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -33,15 +37,17 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(UserController.class)
+@Import({SecurityConfig.class})
 class UserControllerTest {
 
-    private static final String USERS_API_PATH = "/api/users";
     private static final User USER_1 = randomUser(1L);
     private static final User USER_2 = randomUser(2L);
 
@@ -51,6 +57,7 @@ class UserControllerTest {
     @MockitoBean private UserMapper userMapper;
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getAllUsersReturnsListOfUserResponses() throws Exception {
 
         final var userResponse1 = from(USER_1);
@@ -68,6 +75,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getUserByIdReturnsUserResponseWhenUserExists() throws Exception {
 
         final var userResponse = from(USER_1);
@@ -84,13 +92,14 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void createUserCreatesUserAndReturnsCreatedUserResponse() throws Exception {
 
         final var userCreateRequest = randomUserCreateRequest();
         final var user = from(userCreateRequest);
         final var userResponse = from(user);
 
-        doReturn(user).when(userService).createUser(refEq(userCreateRequest));
+        doReturn(user).when(userService).createUser(refEq(userCreateRequest), refEq(UserRole.USER));
         doReturn(userResponse).when(userMapper).toResponse(user);
 
         mockMvc.perform(post(USERS_API_PATH)
@@ -104,6 +113,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void updateUserUpdatesUserAndReturnsUpdatedUserResponse() throws Exception {
 
         final var userId = 1L;
@@ -125,6 +135,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void deleteUserCallsUserServiceAndReturns204() throws Exception {
 
         final var userId = 1L;
@@ -135,6 +146,7 @@ class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void getUserByIdThrowsUserNotFoundReturns404WithErrorMessage() throws Exception {
         final var userId = 999L;
         doThrow(new UserNotFoundException("User not found with ID: " + userId))
@@ -148,6 +160,7 @@ class UserControllerTest {
 
     @MethodSource("invalidUserCreateRequests")
     @ParameterizedTest
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void createUserWithInvalidFieldsReturnsBadRequestAndErrorMessage(final UserCreateRequest userCreateRequest,
                                                                      final String expression,
                                                                      final String expectedErrorMessage) throws
@@ -163,6 +176,7 @@ class UserControllerTest {
 
     @MethodSource("invalidUserUpdateRequests")
     @ParameterizedTest
+    @WithMockUser(username = ADMIN_USERNAME, roles = "ADMIN")
     void updateUserWithInvalidFieldsReturnsBadRequestAndErrorMessage(final UserUpdateRequest userUpdateRequest,
                                                                      final String expression,
                                                                      final String expectedErrorMessage) throws
@@ -182,39 +196,59 @@ class UserControllerTest {
         final var validName = randomString(10);
         final var validEmail = randomEmail();
         final var validAge = randomAge();
+        final var validPassword = "1aB%2cD$";
 
         final var nameExpression = "$.errors.name";
         final var emailExpression = "$.errors.email";
         final var ageExpression = "$.errors.age";
+        final var passwordExpression = "$.errors.password";
 
         return Stream.of(
-                Arguments.of(new UserCreateRequest(null, validEmail, validAge),
+                Arguments.of(new UserCreateRequest(null, validEmail, validAge, validPassword),
                              nameExpression,
                              "Name is required"),
-                Arguments.of(new UserCreateRequest(randomString(200), validEmail, validAge),
+                Arguments.of(new UserCreateRequest(randomString(200), validEmail, validAge, validPassword),
                              nameExpression,
                              "Name must be between 2 and 100 characters"),
-                Arguments.of(new UserCreateRequest(validName, null, validAge),
+                Arguments.of(new UserCreateRequest(validName, null, validAge, validPassword),
                              emailExpression,
                              "Email is required"),
-                Arguments.of(new UserCreateRequest(validName, "invalid", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, "invalid@", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid@", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, "invalid@.com", validAge),
+                Arguments.of(new UserCreateRequest(validName, "invalid@.com", validAge, validPassword),
                              emailExpression,
                              "Email must be valid"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, -1),
+                Arguments.of(new UserCreateRequest(validName, validEmail, -1, validPassword),
                              ageExpression,
                              "Age should not be less than 18"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, 200),
+                Arguments.of(new UserCreateRequest(validName, validEmail, 200, validPassword),
                              ageExpression,
                              "Age should not be greater than 150"),
-                Arguments.of(new UserCreateRequest(validName, validEmail, 10),
+                Arguments.of(new UserCreateRequest(validName, validEmail, 10, validPassword),
                              ageExpression,
-                             "Age should not be less than 18")
+                             "Age should not be less than 18"),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, null),
+                             passwordExpression,
+                             "Password is required"),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "aaBBccDD$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1ABBCCDD$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1abbccdd$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1Abbccddd"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long."),
+                Arguments.of(new UserCreateRequest(validName, validEmail, validAge, "1Ab$"),
+                             passwordExpression,
+                             "Password must contain at least one digit, one lowercase, one uppercase, and one special character, and be at least 8 characters long.")
         );
     }
 

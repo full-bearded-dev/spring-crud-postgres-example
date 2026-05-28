@@ -4,6 +4,7 @@ import java.util.List;
 
 import full.bearded.dev.crud.app.user.model.UserCreateRequest;
 import full.bearded.dev.crud.app.user.model.UserResponse;
+import full.bearded.dev.crud.app.user.model.UserRole;
 import full.bearded.dev.crud.app.user.model.UserUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -67,7 +68,7 @@ public class UserController {
     @PostMapping
     public UserResponse createUser(@Valid @RequestBody final UserCreateRequest user) {
 
-        final var newUser = userService.createUser(user);
+        final var newUser = userService.createUser(user, UserRole.USER);
         log.info("Created new user with ID: {}", newUser.getId());
         return userMapper.toResponse(newUser);
     }
