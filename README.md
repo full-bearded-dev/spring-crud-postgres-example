@@ -21,7 +21,18 @@ Verify Docker is running:
 docker ps
 ```
 
-Run the application:
+Run the application for the first time and seed the 
+first admin user:
+
+```shell
+ADMIN_PASSWORD=supersecure ADMIN_EMAIL=admin@example.com ./gradlew bootRun
+```
+
+**NOTE: you can change these admin credentials to 
+whatever you'd like. This will only create one user with 
+the name "admin" in the Postgres database.**
+
+Run the application after creating an admin user:
 
 ```shell
 ./gradlew bootRun
@@ -51,36 +62,44 @@ Run a specific test method (change the package, class and method name):
 
 ### cURL Commands
 
+**NOTE: ensure to update the credentials to whatever 
+admin user or user you have created. Users with `ADMIN` 
+roles can create, update and delete users. Users with 
+the `USER` role can only read users.**
+
 #### Create User
 
 ```shell
-curl -X POST http://localhost:8080/api/users \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Jon","email": "jon@example.com", "age": 40}'
+curl -i -u admin:supersecure -X POST \
+-H "Content-Type: application/json" \
+-d '{"name": "Jon","email": "jon@example.com", "age": 40, "password": "1aB%2cD$"}' \
+http://localhost:8080/api/users
 ```
 
 #### Get All Users
 
 ```shell
-curl -X GET http://localhost:8080/api/users
+curl -i -u admin:supersecure -X GET http://localhost:8080/api/users
 ```
 
 #### Get Single User by ID
 
 ```shell
-curl -X GET http://localhost:8080/api/users/1
+curl -i -u admin:supersecure -X GET http://localhost:8080/api/users/1
 ```
 
 #### Update User
 
 ```shell
-curl -X PUT http://localhost:8080/api/users/1 \
+curl -i -u admin:supersecure \
+-X PUT \
 -H "Content-Type: application/json" \
--d '{"name": "JonUpdated", "email": "jon-updated@example.com", "age": 41}'
+-d '{"name": "JonUpdated", "email": "jon-updated@example.com", "age": 41}' \
+http://localhost:8080/api/users/1
 ```
 
 #### Delete User
 
 ```shell
-curl -X DELETE http://localhost:8080/api/users/1
+curl -i -u admin:supersecure -X DELETE http://localhost:8080/api/users/1
 ```
