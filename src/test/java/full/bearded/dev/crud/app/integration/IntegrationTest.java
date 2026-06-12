@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,7 +20,8 @@ public abstract class IntegrationTest {
             new PostgreSQLContainer<>("postgres:15")
                     .withDatabaseName("test-db")
                     .withUsername("test")
-                    .withPassword("test");
+                    .withPassword("test")
+                    .waitingFor(Wait.forListeningPort());
 
     static {
         postgres.start();
