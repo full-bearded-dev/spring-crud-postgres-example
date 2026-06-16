@@ -1,8 +1,13 @@
 # Spring Boot CRUD Postgres Example
 
-An example repository for creating a Spring Boot CRUD application that connects to a PostgreSQL database.
+An example repository for creating a Spring Boot CRUD
+application that connects to a PostgreSQL database.
 
 ## Setup and Running the Application
+
+**NOTE: before running the application, ensure the Postgres
+database is
+up and running.**
 
 Install and run Postgres through Docker:
 
@@ -21,15 +26,15 @@ Verify Docker is running:
 docker ps
 ```
 
-Run the application for the first time and seed the 
+Run the application for the first time and seed the
 first admin user:
 
 ```shell
 ADMIN_PASSWORD=supersecure ADMIN_EMAIL=admin@example.com ./gradlew bootRun
 ```
 
-**NOTE: you can change these admin credentials to 
-whatever you'd like. This will only create one user with 
+**NOTE: you can change these admin credentials to
+whatever you'd like. This will only create one user with
 the name "admin" in the Postgres database.**
 
 Run the application after creating an admin user:
@@ -38,33 +43,64 @@ Run the application after creating an admin user:
 ./gradlew bootRun
 ```
 
+### Running With Docker
+
+Verify Docker is running:
+
+```shell
+docker ps
+```
+
+Build the Docker image in the root directory:
+
+```shell
+docker build -t our-api .
+```
+
+Run the Docker image:
+
+```shell
+docker run \
+  -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/test_db \
+  our-api
+```
+
 ## Testing the Application
 
-You can test this app using the [cURL](https://en.wikipedia.org/wiki/CURL) commands below. You may also prefer to use [Postman](https://www.postman.com/) for
+You can test this app using
+the [cURL](https://en.wikipedia.org/wiki/CURL) commands
+below. You may also prefer to
+use [Postman](https://www.postman.com/) for
 testing APIs which is more user-friendly.
 
 ### Run Unit and Integration Tests
 
 Run all tests:
+
 ```shell
 ./gradlew test
 ```
 
-Run a specific test class (change the package and class name):
+Run a specific test class (change the package and class
+name):
+
 ```shell
 ./gradlew test --tests com.example.YourTestClass
 ```
 
-Run a specific test method (change the package, class and method name):
+Run a specific test method (change the package, class and
+method name):
+
 ```shell
 ./gradlew test --tests com.example.YourTestClass.yourTestMethod
 ```
 
 ### cURL Commands
 
-**NOTE: ensure to update the credentials to whatever 
-admin user or user you have created. Users with `ADMIN` 
-roles can create, update and delete users. Users with 
+**NOTE: ensure to update the credentials to whatever
+admin user or user you have created. Users with `ADMIN`
+roles can create, update and delete users. Users with
 the `USER` role can only read users.**
 
 #### Create User
