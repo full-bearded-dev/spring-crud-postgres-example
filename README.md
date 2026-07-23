@@ -43,7 +43,7 @@ Run the application after creating an admin user:
 ./gradlew bootRun
 ```
 
-### Running With Docker
+### Running With Docker Compose
 
 Verify Docker is running:
 
@@ -51,19 +51,34 @@ Verify Docker is running:
 docker ps
 ```
 
-Build the Docker image in the root directory:
+**NOTE: before running with Docker compose, ensure the 
+Postgres database has been brought down otherwise you'll 
+have a conflicting port error.**
+
+**NOTE: any changes made to the app will not be 
+reflected when running with Docker compose, unless you 
+rebuild the project with `./gradlew clean build`.**
+
+Run the Docker `compose.yml` file in the root directory, 
+`--build` rebuilds the images, `-d` sets it to detached 
+mode which runs the containers in the background:
 
 ```shell
-docker build -t our-api .
+docker compose up --build -d
 ```
 
-Run the Docker image:
+To bring down the application run but retain the data in 
+the database:
 
 ```shell
-docker run \
-  -p 8080:8080 \
-  -e SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/test_db \
-  our-api
+docker compose down
+```
+
+Or to bring down the application and remove the volume 
+(delete all data in the database):
+
+```shell
+docker compose down -v
 ```
 
 ## Testing the Application
